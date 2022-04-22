@@ -1,16 +1,23 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import {
+  CacheInterceptor,
+  Controller,
+  Get,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Post, PostsService } from './posts.service';
 
+@UseInterceptors(CacheInterceptor)
 @Controller('posts')
 export class PostsController {
   constructor(private postsService: PostsService) {}
   @Get('/')
-  findAll(): Post[] {
+  async findAll(): Promise<Post[]> {
     return this.postsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: number): Post {
+  @Get('/:id')
+  async findOne(@Param('id') id: number): Promise<Post> {
     return this.postsService.findOne(id);
   }
 }
