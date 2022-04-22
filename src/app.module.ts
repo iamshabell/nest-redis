@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule } from '@nestjs/config';
+import * as Joi from '@hapi/joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: 'GREETING_SERVICE',
-        transport: Transport.REDIS,
-        options: {
-          url: 'redis://localhost:6379',
-        },
-      },
-    ]),
+    ConfigModule.forRoot({
+      validationSchema: Joi.object({
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.number().required(),
+      }),
+    }),
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
